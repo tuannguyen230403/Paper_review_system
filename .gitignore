@@ -1,0 +1,38 @@
+# ── Secrets ──
+.env
+*.key
+*.pem
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Virtual environments ──
+.venv/
+venv/
+env/
+ENV/
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Logs ──
+*.log
+logs/
+
+# ── Uploads / temp files ──
+uploads/
+tmp/
+*.tmp
+*.pdf

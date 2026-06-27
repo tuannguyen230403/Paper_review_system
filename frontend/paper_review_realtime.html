@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ScholAI Review - Pro UI</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/style.css" />
+</head>
+
+<body>
+<div class="layout">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚖️</div>
+      <div class="logo-text">Schol<span>AI</span> Review</div>
+    </div>
+    <div class="topbar-right">
+      <span class="pill">A2A Protocol v0.3</span>
+      <span class="pill" id="sp2">● READY</span>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div>
+      <div class="sidebar-label">Agents</div>
+
+      <div class="agent-mini gpt" id="aa">
+        <div class="am-top">
+          <span class="adot gpt"></span>
+          <span class="am-name">GPT-4o</span>
+        </div>
+        <div class="am-model">openai · port 8001</div>
+        <div class="am-status" id="sa">Supporter · idle</div>
+      </div>
+
+      <div class="agent-mini claude" id="ab">
+        <div class="am-top">
+          <span class="adot claude"></span>
+          <span class="am-name">Claude Sonnet</span>
+        </div>
+        <div class="am-model">anthropic · port 8002</div>
+        <div class="am-status" id="sb">Critic · idle</div>
+      </div>
+
+      <div class="agent-mini judge" id="aj">
+        <div class="am-top">
+          <span class="adot judge"></span>
+          <span class="am-name">Area Chair</span>
+        </div>
+        <div class="am-model">openai · port 8003</div>
+        <div class="am-status" id="sj">Judge · idle</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sidebar-label">Progress</div>
+      <div class="pb-wrap" style="margin-bottom:16px"><div class="pb" id="pb"></div></div>
+      <div id="sl"></div>
+    </div>
+
+    <div>
+      <div class="sidebar-label">Paper</div>
+      <div class="upload-area" id="uz">
+        <input type="file" id="fi2" accept=".pdf,.txt"/>
+        <div class="u-icon">📄</div>
+        <div class="u-title">Drop PDF here</div>
+        <div class="u-sub">or click to browse</div>
+        <div class="u-name" id="fn"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sidebar-label">Settings</div>
+      <div class="sr"><span class="sn">Debate Rounds</span><span class="sv" id="rv">2</span></div>
+      <input type="range" id="rs" min="1" max="4" value="2" oninput="document.getElementById('rv').textContent=this.value"/>
+      <div style="margin-bottom:12px">
+        <span class="sn">Backend URL</span>
+        <input type="text" id="bu" value="http://localhost:8000"/>
+      </div>
+      <div>
+        <span class="sn">Mode</span>
+        <select id="ms">
+          <option value="demo">Demo (no backend)</option>
+          <option value="real">Real (Backend)</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="sbtn" id="stb" onclick="startReview()">
+      <span id="bi">▶</span>
+      <span id="bt">Start Review</span>
+    </button>
+  </div>
+
+  <div class="main-panel">
+    <div class="chat-hdr">
+      <span class="ct">Debate Feed — realtime</span>
+      <span class="cm" id="cm2">Waiting for paper…</span>
+    </div>
+
+    <div class="feed" id="feed">
+      <div class="es" id="es">
+        <div class="es-icon">🔬</div>
+        <div class="es-title">Ready to review</div>
+        <div class="es-sub">Upload a paper and press Start. Each agent message appears here as they debate.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==========================
+// DEBUG LOG HELPER
+// ==========================
+function logUI(...args){
+  console.log("[UI]", ...args);
+}
+
+// ==========================
+// DEMO DATA (unchanged)
+// ==========================
+const DV={"scores":{"ORIGINALITY":3,"SUBSTANCE":4,"SOUNDNESS_CORRECTNESS":4,"MEANINGFUL_COMPARISON":2,"IMPACT":3,"CLARITY":3,"APPROPRIATENESS":4,"REVIEWER_CONFIDENCE":4},"RECOMMENDATION":3,"PRESENTATION_FORMAT":"Poster","decision_label":"Major Revision","comments":{"strengths":["Novel two-step mention→sense→entity framework is theoretically well-motivated","Joint training of word, entity, and mention-sense embeddings in one objective is elegant","Outperforms ALIGN on supervised entity linking (Table 2)","Smoothing parameter analysis (Section 6.4.2) addresses popularity bias insightfully","Both qualitative and quantitative evaluations provided"],"weaknesses":["ALIGN comparison confounded by hyperparameters: window 10 vs 5, dim 500 vs 200","Claim of being first work on mention ambiguity is factually wrong — TAC KBP hosted this task for years","Sense creation/disambiguation is underspecified — how many senses, who defines them?","Mention vs mention-sense terminology inconsistently applied throughout Section 3","No statistical significance tests; no downstream task evaluation beyond entity linking"],"general_discussion":"The paper introduces a genuinely interesting idea — the intermediate mention-sense layer — and demonstrates it can improve entity linking. Reviewer A (GPT-4o) correctly identified theoretical soundness and the elegance of the joint training objective.\n\nHowever, Reviewer B (Claude Sonnet) raised legitimate and serious concerns. The most critical: the ALIGN hyperparameter gap (2.5x larger dimension, 2x larger context window) is large enough to explain the performance difference independently. Without controlled ablations matching these values, the comparison is misleading.\n\nThe TAC KBP omission is equally problematic. Claiming novelty while ignoring a directly relevant evaluation series (8-9 systems over two years) suggests incomplete literature coverage. The paper is publishable in principle but requires substantial revision before acceptance."},"meta":{"supporter_key_arguments":["Two-step architecture is novel and theoretically justified by distributional semantics","Joint embedding training elegantly unifies three representation types","Ablation studies confirm architectural — not hyperparameter — contributions"],"critic_key_arguments":["Hyperparameter differences confound the primary ALIGN comparison throughout","TAC KBP directly contradicts the novelty claim made in Section 6","Sense disambiguation is a core black box with insufficient specification"],"debate_quality":"High-quality debate with specific, evidence-based arguments from both sides. Reviewer B consistently identified concrete, verifiable weaknesses. Reviewer A offered reasonable but ultimately insufficient defenses on the hyperparameter issue."}};
+
+const DF=[
+  {e:'step',d:{step:'discovery',label:'Agent Discovery',status:'active'}},
+  {e:'agent_card',d:{agent:'reviewer_a',name:'Reviewer A — GPT-4o',url:'http://localhost:8001'}},
+  {e:'agent_card',d:{agent:'reviewer_b',name:'Reviewer B — Claude Sonnet',url:'http://localhost:8002'}},
+  {e:'agent_card',d:{agent:'judge',name:'Area Chair — OpenAI',url:'http://localhost:8003'}},
+  {e:'step',d:{step:'discovery',label:'Agent Discovery',status:'done'}},
+  {e:'step',d:{step:'initial',label:'Initial Reviews',status:'active'}},
+  {e:'thinking',d:{agent:'reviewer_a',message:'Reading and analyzing the paper...'}},
+  {e:'thinking',d:{agent:'reviewer_b',message:'Identifying weaknesses in methodology...'}},
+  {e:'message',d:{agent:'reviewer_a',round:0,label:'Initial Review',content:'This paper presents Multi-Prototype Mention Embedding (MPME). Key strengths:\n\n1. Two-step mention→sense→entity mapping is theoretically sound.\n2. Outperforms ALIGN in supervised entity linking — Table 2 shows clear improvement.\n3. Joint training of three embedding types (word, entity, mention-sense) is elegant.\n4. Smoothing parameter analysis addresses popularity bias in Section 6.4.2.'}},
+  {e:'message',d:{agent:'reviewer_b',round:0,label:'Initial Review',content:'Critical weaknesses undermine the claims:\n\n1. ALIGN comparison is unfair: ALIGN used window=10, dim=500 vs this paper’s window=5, dim=200. These differences alone could explain the performance gap.\n2. "First work on mention ambiguity" (Section 6) is factually wrong — TAC KBP hosted exactly this task for years.\n3. Sense creation/disambiguation step is a black box — how are senses defined and counted?\n4. Mention vs mention-sense terminology is inconsistently used throughout.'}},
+  {e:'step',d:{step:'initial',label:'Initial Reviews',status:'done'}},
+  {e:'step',d:{step:'round_1',label:'Debate Round 1',status:'active'}},
+  {e:'thinking',d:{agent:'reviewer_a',message:'Preparing rebuttal (Round 1)...'}},
+  {e:'message',d:{agent:'reviewer_a',round:1,label:'Rebuttal Round 1',content:'On ALIGN: Table 3 ablations show the architectural choice — not the hyperparameters — drives the improvement. The two-step process is the key variable.\n\nOn TAC KBP: those systems target Freebase (larger, noisier). This paper focuses on embedding quality over a clean knowledge base.\n\nOn terminology: agreed, Section 3 can be improved — a presentation issue, not a methodological flaw.'}},
+  {e:'thinking',d:{agent:'reviewer_b',message:'Counter-arguing Supporter (Round 1)...'}},
+  {e:'message',d:{agent:'reviewer_b',round:1,label:'Counter Round 1',content:'The ALIGN hyperparameter gap remains unaddressed. Dimension 200 vs 500 alone can account for several percentage points — the ablation does not isolate this variable.\n\nThe TAC KBP dismissal is unsatisfying. "Embedding quality" must be evaluated through application — the task formulation is identical regardless of knowledge base.\n\nThe sense creation process is a CORE component, not a presentation issue. Without it, the method cannot be replicated.'}},
+  {e:'step',d:{step:'round_1',label:'Debate Round 1',status:'done'}},
+  {e:'step',d:{step:'judge',label:'Judge Deliberating',status:'active'}},
+  {e:'thinking',d:{agent:'judge',message:'Synthesizing the full debate...'}},
+  {e:'message',d:{agent:'judge',round:-1,label:'Final Verdict',content:JSON.stringify(DV)}},
+  {e:'step',d:{step:'judge',label:'Judge Deliberating',status:'done'}},
+  {e:'done',d:{message:'Review complete'}},
+];
+
+// ==========================
+// FILE UPLOAD
+// ==========================
+let selFile=null,timerIv=null,t0=null,mc=0,sk=[];
+const zone=document.getElementById('uz'),fi=document.getElementById('fi2');
+
+zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag')});
+zone.addEventListener('dragleave',()=>zone.classList.remove('drag'));
+zone.addEventListener('drop',e=>{
+  e.preventDefault();
+  zone.classList.remove('drag');
+  if(e.dataTransfer.files[0]) hf(e.dataTransfer.files[0]);
+});
+
+fi.addEventListener('change',e=>{
+  if(e.target.files[0]) hf(e.target.files[0]);
+});
+
+function hf(f){
+  selFile=f;
+  zone.classList.add('loaded');
+  document.getElementById('fn').textContent='✓ '+f.name;
+  document.querySelector('.u-title').textContent='Paper loaded';
+  document.querySelector('.u-sub').textContent=(f.size/1024).toFixed(1)+' KB';
+  logUI("File selected:", f.name, "size:", f.size);
+}
+
+// ==========================
+// TIMER
+// ==========================
+function startTimer(){
+  t0=Date.now();
+  timerIv=setInterval(()=>{
+    const s=Math.floor((Date.now()-t0)/1000);
+    document.getElementById('cm2').textContent=s+'s elapsed · '+mc+' messages';
+  },1000);
+}
+
+function stopTimer(){clearInterval(timerIv)}
+
+// ==========================
+// STEP UI
+// ==========================
+function buildSteps(r){
+  sk=['discovery','initial'];
+  for(let i=1;i<=r;i++)sk.push('round_'+i);
+  sk.push('judge');
+
+  const lb={discovery:'Agent Discovery',initial:'Initial Reviews',judge:'Judge Deliberating'};
+  for(let i=1;i<=r;i++)lb['round_'+i]='Debate Round '+i;
+
+  document.getElementById('sl').innerHTML=sk.map((s,i)=>
+    `<div class="step-item" id="si-${s}">
+      <div class="step-icon" id="sic-${s}">${i+1}</div>
+      <span class="step-label">${lb[s]}</span>
+    </div>`
+  ).join('');
+}
+
+function setStep(k,st){
+  const el=document.getElementById('si-'+k),ic=document.getElementById('sic-'+k);
+  if(!el)return;
+
+  el.className='step-item '+st;
+  if(st==='done')ic.textContent='✓';
+
+  const idx=sk.indexOf(k);
+  document.getElementById('pb').style.width=(st==='done'?((idx+1)/sk.length*100):(idx/sk.length*100))+'%';
+}
+
+// ==========================
+// MESSAGE HELPERS
+// ==========================
+function ce(){const e=document.getElementById('es');if(e)e.remove()}
+function rt(a){const el=document.getElementById('tb-'+a);if(el)el.remove()}
+
+function addThinking(ak,msg){
+  logUI("Thinking:", ak, msg);
+
+  rt(ak);ce();
+  const c=ak==='reviewer_a'?'gpt':ak==='reviewer_b'?'claude':'judge';
+  const av=c==='gpt'?'A':c==='claude'?'B':'⚖';
+
+  const el=document.createElement('div');
+  el.id='tb-'+ak;
+  el.className='tbubble '+c;
+
+  el.innerHTML=`<div class="tav">${av}</div><span>${msg}</span><div class="tdl"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  document.getElementById('feed').appendChild(el);
+
+  setTimeout(() => {
+    el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, 150);
+
+  saa(ak,true,msg);
+}
+
+function addDebateMsg(ak,round,lbl,content){
+  logUI("Message:", ak, "round:", round, "label:", lbl, "content length:", content?.length);
+
+  rt(ak);ce();mc++;
+
+  const c=ak==='reviewer_a'?'gpt':ak==='reviewer_b'?'claude':'judge';
+  const av=c==='gpt'?'A':c==='claude'?'B':'⚖';
+
+  const who=ak==='reviewer_a'
+    ?'Reviewer A — GPT-4o'
+    :ak==='reviewer_b'
+    ?'Reviewer B — Claude Sonnet'
+    :'Area Chair — OpenAI';
+
+  const now=new Date().toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const el=document.createElement('div');
+
+  el.className='msg '+c;
+  el.innerHTML=`
+    <div class="mhdr">
+      <div class="mav">${av}</div>
+      <div>
+        <div class="mwho">${who}</div>
+        <div class="mlbl">${lbl}</div>
+      </div>
+      <div class="mtime">${now}</div>
+    </div>
+    <div class="mbody">${esc(content)}</div>
+  `;
+
+  document.getElementById('feed').appendChild(el);
+  el.scrollIntoView({behavior:'smooth',block:'end'});
+  saa(ak,false,'idle');
+}
+
+// ==========================
+// VERDICT RENDER
+// ==========================
+function sc(v){
+  if(v>=4.5)return'#10a37f';
+  if(v>=3.5)return'#4f8ef7';
+  if(v>=2.5)return'#f4c430';
+  return'#e65c5c';
+}
+
+function rl(v){
+  return v===5?'Strong Accept':v===4?'Accept':v===3?'Borderline':v===2?'Reject':'Strong Reject';
+}
+
+function addVerdict(data){
+  logUI("Judge verdict parsed OK:", data);
+
+  rt('judge');ce();mc++;
+
+  const {
+    scores,
+    overall_recommendation,
+    overallRecommendation,
+    RECOMMENDATION,
+    presentation_format,
+    PRESENTATION_FORMAT,
+    decision_label,
+    decisionLabel,
+    comments,
+    meta
+  } = data;
+
+  // Support both schemas (your backend schema + old demo schema)
+  const rec = overall_recommendation ?? overallRecommendation ?? RECOMMENDATION ?? 3;
+  const pf  = presentation_format ?? PRESENTATION_FORMAT ?? "Poster";
+  const dl  = decision_label ?? decisionLabel ?? "Major Revision";
+
+  let dc='revision';
+  if(dl && dl.toLowerCase().includes('accept') && !dl.toLowerCase().includes('revision')) dc='accept';
+  if(dl && dl.toLowerCase().includes('reject')) dc='reject';
+
+  const now=new Date().toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+  const keys=[
+    ['ORIGINALITY','Originality'],
+    ['SUBSTANCE','Substance'],
+    ['SOUNDNESS_CORRECTNESS','Soundness'],
+    ['MEANINGFUL_COMPARISON','Comparison'],
+    ['IMPACT','Impact'],
+    ['CLARITY','Clarity'],
+    ['APPROPRIATENESS','Appropriate'],
+    ['REVIEWER_CONFIDENCE','Confidence']
+  ];
+
+  const sh=keys.map(([k,l])=>{
+    const v=scores?.[k]||0,c=sc(v);
+    return `<div class="si">
+      <div class="sk">${l}</div>
+      <div class="sbw"><div class="sb" style="width:${(v/5)*100}%;background:${c}"></div></div>
+      <div class="sn2" style="color:${c}">${v}</div>
+    </div>`;
+  }).join('');
+
+  const strH=(comments?.strengths||[]).map(s=>`<li>${esc(s)}</li>`).join('');
+  const wkH=(comments?.weaknesses||[]).map(w=>`<li>${esc(w)}</li>`).join('');
+
+  // Support both meta key naming styles
+  const supporterArgs=(meta?.supporter_key_arguments || meta?.reviewer_1_key_points || []);
+  const criticArgs=(meta?.critic_key_arguments || meta?.reviewer_2_key_points || []);
+
+  const fH=supporterArgs.map(a=>`<li>${esc(a)}</li>`).join('');
+  const aH=criticArgs.map(a=>`<li>${esc(a)}</li>`).join('');
+
+  const rc=sc(rec||3);
+
+  const el=document.createElement('div');
+  el.className='vc';
+
+  el.innerHTML=`
+<div class="vc-hdr">
+  <div class="vc-hdr-icon">⚖️</div>
+  <div>
+    <div class="vc-title">Final Verdict — Area Chair</div>
+    <div class="vc-sub">Impartial synthesis · ${now}</div>
+  </div>
+</div>
+
+<div class="vc-sum">
+  <div class="vc-rec">
+    <div class="vc-rnum" style="color:${rc}">${rec||'—'}</div>
+    <div class="vc-rlbl">/ 5 Recommendation</div>
+    <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:${rc};margin-top:6px;text-transform:uppercase;">
+      ${rl(rec)}
+    </div>
+  </div>
+
+  <div class="vc-dcol">
+    <span class="dbadge ${dc}">${dl||'—'}</span>
+    <span class="pbadge">📋 ${pf||'—'}</span>
+  </div>
+
+  <div class="vc-stats-text">
+    ${keys.map(([k])=>`${k.replace(/_/g,' ')}: <span style="color:${sc(scores?.[k]||0)};font-weight:600">${scores?.[k]||0}</span>`).join('<br>')}
+  </div>
+</div>
+
+<div class="vc-scores">
+  <div class="vc-stitle">Dimension Scores</div>
+  <div class="sg">${sh}</div>
+</div>
+
+<div class="vc-cmt">
+  <div class="vc-stitle">Review Comments</div>
+  <div class="cg">
+    <div class="cbox str">
+      <div class="cbox-t">✓ Strengths</div>
+      <ul class="clist">${strH}</ul>
+    </div>
+    <div class="cbox wk">
+      <div class="cbox-t">✗ Weaknesses</div>
+      <ul class="clist">${wkH}</ul>
+    </div>
+  </div>
+
+  <div class="vc-stitle" style="margin-top:24px">Meta Review</div>
+  <div class="gdiscuss">${esc(comments?.meta_review || comments?.general_discussion || '')}</div>
+</div>
+
+<div class="vc-meta">
+  <div class="vc-stitle">Debate Analysis</div>
+  <div class="mg">
+    <div class="mbox for">
+      <div class="mbox-t">▲ Reviewer 1 (GPT-4o)</div>
+      <ul class="mlist">${fH}</ul>
+    </div>
+    <div class="mbox ag">
+      <div class="mbox-t">▼ Reviewer 2 (Claude)</div>
+      <ul class="mlist">${aH}</ul>
+    </div>
+  </div>
+
+  ${meta?.debate_quality?`<div class="dq">💬 <div>${esc(meta.debate_quality)}</div></div>`:''}
+</div>
+`;
+
+  document.getElementById('feed').appendChild(el);
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+  saa('judge',false,'Verdict delivered');
+}
+
+// ==========================
+// JSON EXTRACTOR (IMPORTANT FIX)
+// ==========================
+function extractJsonBlock(text) {
+  if (!text) return "";
+
+  let t = String(text)
+    .replace(/```json/gi, "")
+    .replace(/```/g, "")
+    .trim();
+
+  const start = t.indexOf("{");
+  if (start === -1) return t;
+
+  t = t.slice(start);
+
+  let depth = 0;
+  for (let i = 0; i < t.length; i++) {
+    if (t[i] === "{") depth++;
+    else if (t[i] === "}") depth--;
+
+    if (depth === 0) {
+      return t.slice(0, i + 1);
+    }
+  }
+
+  return t;
+}
+
+function addMsg(ak, r, lbl, c) {
+  if (ak === 'judge') {
+    try {
+      logUI("Judge raw verdict length:", c?.length);
+      logUI("Judge raw verdict preview:", String(c).slice(0, 400));
+
+      const cleanJson = extractJsonBlock(c);
+      logUI("Judge extracted JSON preview:", cleanJson.slice(0, 400));
+
+      const parsedData = JSON.parse(cleanJson);
+      addVerdict(parsedData);
+
+    } catch (e) {
+      console.error("Lỗi parse JSON của Judge:", e);
+      addDebateMsg(ak, r, lbl, c);
+    }
+  } else {
+    addDebateMsg(ak, r, lbl, c);
+  }
+}
+
+// ==========================
+// OTHER UI HELPERS
+// ==========================
+function addCard(a,name,url){
+  logUI("Agent discovered:", a, name, url);
+  ce();
+  const el=document.createElement('div');
+  el.style.cssText='display:flex;gap:8px;flex-wrap:wrap';
+  el.innerHTML=`<span class="cchip">🔍 Discovered: <strong>${name}</strong> @ ${url}</span>`;
+  document.getElementById('feed').appendChild(el);
+}
+
+function saa(ak,active,msg){
+  const m={
+    reviewer_a:['aa','sa','active-gpt'],
+    reviewer_b:['ab','sb','active-claude'],
+    judge:['aj','sj','active-judge']
+  };
+
+  const[cid,sid,cls]=m[ak]||[];
+  if(!cid)return;
+
+  const card=document.getElementById(cid),st=document.getElementById(sid);
+  ['active-gpt','active-claude','active-judge'].forEach(c=>card.classList.remove(c));
+
+  if(active){
+    card.classList.add(cls);
+    st.innerHTML=`<span class="tdots">${msg||'Thinking'}</span>`;
+  }else{
+    st.textContent=msg||'idle';
+  }
+}
+
+function ssp(t,type){
+  const el=document.getElementById('sp2');
+  el.textContent='● '+t;
+  el.className='pill'+(type?' '+type:'');
+}
+
+function esc(t){
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),4000);
+}
+
+// ==========================
+// EVENT HANDLER
+// ==========================
+function handleEvent(ev,data){
+  logUI("Event received:", ev, data);
+
+  switch(ev){
+    case'step':
+      setStep(data.step,data.status);
+      break;
+
+    case'agent_card':
+      addCard(data.agent,data.name,data.url);
+      break;
+
+    case'thinking':
+      addThinking(data.agent,data.message);
+      break;
+
+    case'message':
+      addMsg(data.agent,data.round,data.label,data.content);
+      break;
+
+    case'error':
+      toast('Error: '+data.message);
+      ssp('ERROR','error');
+      break;
+
+    case'done':
+      ssp('DONE','live');
+      stopTimer();
+      document.getElementById('stb').disabled=false;
+      document.getElementById('bi').textContent='✓';
+      document.getElementById('bt').textContent='Run Again';
+      ['aa','ab','aj'].forEach(id=>['active-gpt','active-claude','active-judge'].forEach(c=>document.getElementById(id).classList.remove(c)));
+      ['sa','sb','sj'].forEach(id=>document.getElementById(id).textContent='idle');
+      break;
+  }
+}
+
+// ==========================
+// DEMO MODE
+// ==========================
+async function runDemo(r){
+  logUI("Running DEMO mode with rounds:", r);
+
+  const dl={step:450,agent_card:750,thinking:1900,message:2500,done:400};
+
+  const flow=DF.filter(x=>{
+    if(x.e==='step'&&x.d.step?.startsWith('round_'))
+      return parseInt(x.d.step.split('_')[1])<=r;
+
+    if(x.e==='message'&&x.d.round>0)
+      return x.d.round<=r;
+
+    return true;
+  });
+
+  for(const x of flow){
+    await new Promise(res=>setTimeout(res,dl[x.e]||600));
+    handleEvent(x.e,x.d);
+  }
+}
+
+// ==========================
+// REAL MODE (Backend)
+// ==========================
+async function runReal(r){
+  logUI("Running REAL mode with rounds:", r);
+
+  if(!selFile){
+    toast('Please upload a PDF file first.');
+    return;
+  }
+
+  const bu=document.getElementById('bu').value.trim();
+  const fd=new FormData();
+  fd.append('file',selFile);
+  fd.append('rounds',r);
+
+  handleEvent('step',{step:'discovery',label:'Agent Discovery',status:'active'});
+  handleEvent('step',{step:'discovery',label:'Agent Discovery',status:'done'});
+  handleEvent('step',{step:'initial',label:'Initial Reviews',status:'active'});
+  handleEvent('thinking',{agent:'reviewer_a',message:'Reading and analyzing the paper...'});
+  handleEvent('thinking',{agent:'reviewer_b',message:'Identifying weaknesses in methodology...'});
+
+  const delay = ms => new Promise(res => setTimeout(res, ms));
+
+  try{
+    logUI("Sending /review request to backend:", bu);
+
+    const resp = await fetch(`${bu}/review`, {method:'POST', body:fd});
+    logUI("Backend status:", resp.status);
+
+    if(!resp.ok) throw new Error('Backend responded '+resp.status);
+
+    const result = await resp.json();
+    logUI("Backend result keys:", Object.keys(result));
+
+    const debate_log = result.debate_log || [];
+    const ac_verdict = result.ac_verdict || "";
+
+    logUI("debate_log length:", debate_log.length);
+    logUI("ac_verdict length:", ac_verdict.length);
+    logUI("ac_verdict preview:", String(ac_verdict).slice(0, 400));
+
+    handleEvent('step',{step:'initial',label:'Initial Reviews',status:'done'});
+
+    // Round 0
+    const round0 = debate_log.filter(d => d.round === 0);
+    for(const d of round0){
+      await delay(400);
+      const ak = d.agent.includes('1') ? 'reviewer_a' : 'reviewer_b';
+      handleEvent('message',{agent:ak, round:0, label:'Initial Review', content:d.content});
+    }
+
+    // Debate rounds
+    const maxRound = debate_log.length > 0 ? Math.max(...debate_log.map(d => d.round)) : 0;
+
+    for(let i = 1; i <= maxRound; i++){
+      handleEvent('step',{step:'round_'+i, label:'Debate Round '+i, status:'active'});
+
+      const roundMsgs = debate_log.filter(d => d.round === i);
+
+      for(const d of roundMsgs){
+        await delay(400);
+
+        const ak = d.agent.includes('1') ? 'reviewer_a' : 'reviewer_b';
+        const lbl = ak === 'reviewer_a' ? 'Rebuttal Round '+i : 'Counter Round '+i;
+
+        handleEvent('message',{agent:ak, round:i, label:lbl, content:d.content});
+      }
+
+      handleEvent('step',{step:'round_'+i, label:'Debate Round '+i, status:'done'});
+    }
+
+    // Judge verdict
+    handleEvent('step',{step:'judge', label:'Judge Deliberating', status:'active'});
+    handleEvent('thinking',{agent:'judge', message:'Synthesizing the full debate...'});
+    await delay(600);
+
+    handleEvent('message',{agent:'judge', round:-1, label:'Final Verdict', content:ac_verdict});
+
+    handleEvent('step',{step:'judge', label:'Judge Deliberating', status:'done'});
+    handleEvent('done',{message:'Review complete'});
+
+  }catch(err){
+    console.error("[UI] REAL mode error:", err);
+    toast('Error: '+err.message);
+    ssp('ERROR','error');
+    stopTimer();
+    document.getElementById('stb').disabled=false;
+    document.getElementById('bi').textContent='▶';
+    document.getElementById('bt').textContent='Start Review';
+  }
+}
+
+// ==========================
+// START BUTTON
+// ==========================
+async function startReview(){
+  const mode=document.getElementById('ms').value;
+  const r=parseInt(document.getElementById('rs').value);
+
+  logUI("Start review clicked. Mode:", mode, "Rounds:", r);
+
+  document.getElementById('feed').innerHTML='<div class="es" id="es"><div class="es-icon">🔬</div><div class="es-title">Starting review…</div></div>';
+
+  mc=0;
+  buildSteps(r);
+  ssp('RUNNING','live');
+
+  document.getElementById('stb').disabled=true;
+  document.getElementById('bi').innerHTML='<span class="spinner"></span>';
+  document.getElementById('bt').textContent='Running…';
+  document.getElementById('pb').style.width='0%';
+
+  startTimer();
+
+  if(mode==='demo') await runDemo(r);
+  else await runReal(r);
+}
+</script>
+</body>
+</html>

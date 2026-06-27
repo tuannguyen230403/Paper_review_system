@@ -1,0 +1,10 @@
+a2a-sdk[http-server]
+anthropic
+openai
+fastapi
+uvicorn[standard]
+httpx
+pypd
+python-multipart
+python-dotenv
+pdfplumber

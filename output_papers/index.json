@@ -1,0 +1,112 @@
+[
+  {
+    "index": 1,
+    "paper_id": "606",
+    "title": "Neural Symbolic Machines: Learning Semantic Parsers on Freebase with Weak Supervision",
+    "source": "acl",
+    "accepted": true,
+    "num_reviews": 2,
+    "json_file": "01_606_Neural_Symbolic_Machines_Learning_Semant.json",
+    "pdf_file": "01_606_Neural_Symbolic_Machines_Learning_Semant.pdf",
+    "pdf_status": "ok"
+  },
+  {
+    "index": 2,
+    "paper_id": "201",
+    "title": "Investigating Different Context Types and Representations for Learning Word Embeddings",
+    "source": "acl",
+    "accepted": true,
+    "num_reviews": 3,
+    "json_file": "02_201_Investigating_Different_Context_Types_an.json",
+    "pdf_file": "02_201_Investigating_Different_Context_Types_an.pdf",
+    "pdf_status": "ok"
+  },
+  {
+    "index": 3,
+    "paper_id": "31",
+    "title": "Event Factuality Identification via Deep Neural Networks",
+    "source": "acl",
+    "accepted": false,
+    "num_reviews": 3,
+    "json_file": "03_31_Event_Factuality_Identification_via_Deep.json",
+    "pdf_file": "03_31_Event_Factuality_Identification_via_Deep.pdf",
+    "pdf_status": "ok"
+  },
+  {
+    "index": 4,
+    "paper_id": "634",
+    "title": "Exploring LOTS in Deep Neural Networks",
+    "source": "iclr",
+    "accepted": true,
+    "num_reviews": 20,
+    "json_file": "04_634_Exploring_LOTS_in_Deep_Neural_Networks.json",
+    "pdf_file": "04_634_Exploring_LOTS_in_Deep_Neural_Networks.pdf",
+    "pdf_status": "ok"
+  },
+  {
+    "index": 5,
+    "paper_id": "316",
+    "title": "Semi-supervised Knowledge Transfer for Deep Learning from Private Training Data",
+    "source": "iclr",
+    "accepted": true,
+    "num_reviews": 24,
+    "json_file": "05_316_Semisupervised_Knowledge_Transfer_for_De.json",
+    "pdf_file": "05_316_Semisupervised_Knowledge_Transfer_for_De.pdf",
+    "pdf_status": "ok"
+  },
+  {
+    "index": 6,
+    "paper_id": "528",
+    "title": "Neural Functional Programming",
+    "source": "iclr",
+    "accepted": false,
+    "num_reviews": 20,
+    "json_file": "06_528_Neural_Functional_Programming.json",
+    "pdf_file": "06_528_Neural_Functional_Programming.pdf",
+    "pdf_status": "ok"
+  },
+  {
+    "index": 7,
+    "paper_id": "143",
+    "title": "Massively Multilingual Word Embeddings",
+    "source": "conll",
+    "accepted": true,
+    "num_reviews": 2,
+    "json_file": "07_143_Massively_Multilingual_Word_Embeddings.json",
+    "pdf_file": "07_143_Massively_Multilingual_Word_Embeddings.pdf",
+    "pdf_status": "ok"
+  },
+  {
+    "index": 8,
+    "paper_id": "132",
+    "title": "Mixing Dirichlet Topic Models and Word Embeddings to Make lda2vec",
+    "source": "conll",
+    "accepted": false,
+    "num_reviews": 2,
+    "json_file": "08_132_Mixing_Dirichlet_Topic_Models_and_Word_E.json",
+    "pdf_file": "08_132_Mixing_Dirichlet_Topic_Models_and_Word_E.pdf",
+    "pdf_status": "ok"
+  },
+  {
+    "index": 9,
+    "paper_id": "625",
+    "title": "Communicating Hierarchical Neural Controllers for Learning Zero-shot Task Generalization",
+    "source": "iclr",
+    "accepted": false,
+    "num_reviews": 18,
+    "json_file": "09_625_Communicating_Hierarchical_Neural_Contro.json",
+    "pdf_file": "09_625_Communicating_Hierarchical_Neural_Contro.pdf",
+    "pdf_status": "ok"
+  },
+  {
+    "index": 10,
+    "paper_id": "602",
+    "title": "Gated-Attention Readers for Text Comprehension",
+    "source": "iclr",
+    "accepted": true,
+    "num_reviews": 26,
+    "json_file": "10_602_GatedAttention_Readers_for_Text_Comprehe.json",
+    "pdf_file": "10_602_GatedAttention_Readers_for_Text_Comprehe.pdf",
+    "pdf_status": "ok"
+  }
+]
